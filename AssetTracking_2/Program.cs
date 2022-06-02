@@ -4,28 +4,41 @@ using AssetTracking_2;
 using Microsoft.EntityFrameworkCore;
 
 MyDbContext Context = new MyDbContext();
+var dataset = 0;
+
+// first sort data and then call Write output method
+Console.WriteLine("\t\t\t*** Asset Tracking ***");
 
 // sort assets by Type and then by purchase date
-
 var sortedTypeDate = Context.assetitems.Include(x => x.Currency).OrderBy(asset => asset.Type).ThenBy(asset => asset.PurchaseDate);
-// call Write output method using 
-Write_output(sortedTypeDate);
+Console.WriteLine("\t\t Data sorted by Type and then Purchase date");
+dataset = 1;
+Write_output(sortedTypeDate,dataset);
 
-
-// Write_output1(assets, currencyCode);
+// sort assets by country and then purchase date
 var sortedOfficePdate = Context.assetitems.Include(x => x.Currency).OrderBy(asset => asset.CurrencyCountry).ThenBy(asset => asset.PurchaseDate);
-Write_output(sortedOfficePdate);
+Console.WriteLine("\t\t Data sorted by Country and then Purchase date");
+dataset = 2;
+Write_output(sortedOfficePdate,dataset);
 
 
-// write output
-void Write_output(IOrderedQueryable<AssetItem> assets)
-// private static void Write_output1(List<AssetItem> assets, List<Currency> currencies)
+
+// write output method
+void Write_output(IOrderedQueryable<AssetItem> assets,int dataset)
 {
     Console.ResetColor();
     // string mainCurrency = "USD";
-    Console.WriteLine("{0," + 30 + "}", "*** Asset Tracking ***");
-    Console.WriteLine("Type".PadRight(10) + "Brand".PadRight(10) + "Model".PadRight(10) + "Office".PadRight(10) + "Purchase Date " + "Price in USD " + "Currency " + "Local price today");
-    Console.WriteLine("----".PadRight(10) + "-----".PadRight(10) + "-----".PadRight(10) + "------".PadRight(10) + "------------- " + "------------ " + "-------- " + "-----------------");
+    if (dataset == 1)
+    {
+        Console.WriteLine("Type".PadRight(10) + "Brand".PadRight(10) + "Model".PadRight(10) + "Office".PadRight(10) + "Purchase Date " + "Price in USD " + "Currency " + "Local price today");
+        Console.WriteLine("----".PadRight(10) + "-----".PadRight(10) + "-----".PadRight(10) + "------".PadRight(10) + "------------- " + "------------ " + "-------- " + "-----------------");
+
+    }
+    else
+    {
+        Console.WriteLine("Office".PadRight(10) + "Type".PadRight(10) + "Brand".PadRight(10) + "Model".PadRight(10) + "Purchase Date " +"Price in USD " + "Currency " + "Local price today");
+        Console.WriteLine("------".PadRight(10) + "----".PadRight(10) + "-----".PadRight(10) + "-----".PadRight(10) + "------------- " + "------------ " + "-------- " + "-----------------");
+    }
     foreach (AssetItem a in assets)
     {
  
@@ -41,8 +54,14 @@ void Write_output(IOrderedQueryable<AssetItem> assets)
             Console.ForegroundColor = ConsoleColor.DarkYellow;
         else
             Console.ResetColor();
-
-        Console.WriteLine(a.Type.PadRight(10) + a.Brand.PadRight(10) + a.Model.PadRight(10) + a.CurrencyCountry.PadRight(10) + Pdate.ToString("yyyy-MM-dd") + a.Price.ToString("N2").PadLeft(12) + a.Currency.Shorten.PadLeft(10) + NewPrice.PadLeft(12));
+        if (dataset == 1)
+        {
+            Console.WriteLine(a.Type.PadRight(10) + a.Brand.PadRight(10) + a.Model.PadRight(10) + a.CurrencyCountry.PadRight(10) + Pdate.ToString("yyyy-MM-dd") + a.Price.ToString("N2").PadLeft(12) + a.Currency.Shorten.PadLeft(10) + NewPrice.PadLeft(12));
+        }
+        else
+        {
+            Console.WriteLine(a.CurrencyCountry.PadRight(10) + a.Type.PadRight(10) + a.Brand.PadRight(10) + a.Model.PadRight(10) + Pdate.ToString("yyyy-MM-dd") + a.Price.ToString("N2").PadLeft(12) + a.Currency.Shorten.PadLeft(10) + NewPrice.PadLeft(12));
+        }
     }
     Console.ResetColor();
     Console.WriteLine();
